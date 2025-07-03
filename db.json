@@ -1,7 +1,45 @@
 {
   "observations": [
-    { "id": "1", "studentName": "Ana Júlia", "observation": "Participou ativamente da discussão em grupo sobre o ciclo da água.", "isFavorite": true, "createdAt": "2025-07-02T10:00:00Z" },
-    { "id": "2", "studentName": "Lucas Martins", "observation": "Ainda demonstra dificuldade em frações, precisa de reforço.", "isFavorite": false, "createdAt": "2025-07-01T14:30:00Z" },
-    { "id": "3", "studentName": "Beatriz Costa", "observation": "Entregou o trabalho de artes com muito capricho e criatividade.", "isFavorite": false, "createdAt": "2025-06-30T11:00:00Z" }
+    {
+      "id": "1",
+      "studentName": "Ana Júlia",
+      "observation": "Participou ativamente da discussão em grupo sobre o ciclo da água.",
+      "isFavorite": true,
+      "isCompleted": false,
+      "createdAt": "2025-07-02T10:00:00Z"
+    },
+    {
+      "id": "2",
+      "studentName": "Lucas Martins",
+      "observation": "Ainda demonstra dificuldade em frações, precisa de reforço.",
+      "isFavorite": false,
+      "isCompleted": true,
+      "createdAt": "2025-07-01T14:30:00Z",
+      "completedAt": "2025-07-03T15:24:25.690Z"
+    },
+    {
+      "id": "3",
+      "studentName": "Beatriz Costa",
+      "observation": "Entregou o trabalho de artes com muito capricho e criatividade.",
+      "isFavorite": true,
+      "isCompleted": false,
+      "createdAt": "2025-06-30T11:00:00Z"
+    },
+    {
+      "id": "5daa",
+      "studentName": "Matheus",
+      "observation": "Criando mais um",
+      "isFavorite": false,
+      "isCompleted": false,
+      "createdAt": "2025-07-03T13:02:16.386Z"
+    },
+    {
+      "id": "cb27",
+      "studentName": "Novo aluno",
+      "observation": "Nova observação",
+      "isFavorite": false,
+      "isCompleted": false,
+      "createdAt": "2025-07-03T15:24:02.690Z"
+    }
   ]
 }
