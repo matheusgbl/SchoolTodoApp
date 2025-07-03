@@ -139,4 +139,3 @@ const observationsSlice = createSlice({
 
 export const { resetCreateStatus, clearError } = observationsSlice.actions;
 export default observationsSlice.reducer;
-

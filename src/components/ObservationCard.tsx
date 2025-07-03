@@ -89,6 +89,5 @@ const ObservationCard: React.FC<Props> = ({
   );
 };
 
-// Otimização para evitar re-renders desnecessários
 export default React.memo(ObservationCard);
 

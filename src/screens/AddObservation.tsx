@@ -28,18 +28,17 @@ type AddObservationScreenNavigationProp = StackNavigationProp<RootStackParamList
 const AddObservationScreen = () => {
   const navigation = useNavigation<AddObservationScreenNavigationProp>();
   const { addObservation, createStatus, error, resetCreateState, clearErrors } = useObservations();
+  const isLoading = createStatus === 'loading';
 
   const [studentName, setStudentName] = useState('');
   const [observation, setObservation] = useState('');
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
-  // Limpar estados quando a tela é montada
   useEffect(() => {
     resetCreateState();
     clearErrors();
   }, [resetCreateState, clearErrors]);
 
-  // Lidar com sucesso na criação
   useEffect(() => {
     if (createStatus === 'succeeded') {
         resetCreateState();
@@ -96,7 +95,6 @@ const AddObservationScreen = () => {
     }
   };
 
-  const isLoading = createStatus === 'loading';
 
   return (
     <Container>
@@ -157,4 +155,3 @@ const AddObservationScreen = () => {
 };
 
 export default AddObservationScreen;
-
