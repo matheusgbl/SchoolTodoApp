@@ -1,41 +1,10 @@
 import React, { useCallback } from 'react';
 import { FlatList, Alert } from 'react-native';
-import styled from 'styled-components/native';
 import { useObservations } from '../hooks/useObservation';
-import { Observation } from '../store/slices/observationSlice';
 import ObservationCard from '../components/ObservationCard';
-
-const Container = styled.View`
-  flex: 1;
-  background-color: ${({ theme }) => theme.colors.background};
-`;
-
-const EmptyContainer = styled.View`
-  flex: 1;
-  justify-content: center;
-  align-items: center;
-  padding: ${({ theme }) => theme.spacing.large}px;
-`;
-
-const EmptyIcon = styled.Text`
-  font-size: 64px;
-  margin-bottom: ${({ theme }) => theme.spacing.medium}px;
-`;
-
-const EmptyText = styled.Text`
-  font-size: 18px;
-  color: ${({ theme }) => theme.colors.textSecondary};
-  text-align: center;
-  margin-bottom: ${({ theme }) => theme.spacing.medium}px;
-  font-weight: 600;
-`;
-
-const EmptySubText = styled.Text`
-  font-size: 14px;
-  color: ${({ theme }) => theme.colors.textSecondary};
-  text-align: center;
-  line-height: 20px;
-`;
+import { Observation } from '../types/observations';
+import { Container } from '../styles/screens/home';
+import EmptyState from '../components/EmptyState';
 
 interface Props {
   observations: Observation[];
@@ -43,18 +12,17 @@ interface Props {
   refreshing: boolean;
 }
 
-const CompletedObservations: React.FC<Props> = ({ 
-  observations, 
-  onRefresh, 
-  refreshing 
+const CompletedObservations: React.FC<Props> = ({
+  observations,
+  onRefresh,
+  refreshing
 }) => {
-  const { 
-    removeObservation, 
+  const {
+    removeObservation,
     toggleObservationFavorite,
-    toggleObservationCompleted 
+    toggleObservationCompleted
   } = useObservations();
 
-  // Filtrar apenas observações concluídas
   const completedObservations = observations.filter(obs => obs.isCompleted);
 
   const handleDeleteObservation = useCallback((observation: Observation) => {
@@ -63,8 +31,8 @@ const CompletedObservations: React.FC<Props> = ({
       `Deseja realmente excluir a observação sobre ${observation.studentName}?`,
       [
         { text: 'Cancelar', style: 'cancel' },
-        { 
-          text: 'Excluir', 
+        {
+          text: 'Excluir',
           style: 'destructive',
           onPress: () => removeObservation(observation.id)
         }
@@ -82,8 +50,8 @@ const CompletedObservations: React.FC<Props> = ({
       `Deseja reativar a observação sobre ${observation.studentName}?`,
       [
         { text: 'Cancelar', style: 'cancel' },
-        { 
-          text: 'Reativar', 
+        {
+          text: 'Reativar',
           onPress: () => toggleObservationCompleted(observation)
         }
       ]
@@ -91,7 +59,7 @@ const CompletedObservations: React.FC<Props> = ({
   }, [toggleObservationCompleted]);
 
   const renderItem = useCallback(({ item }: { item: Observation }) => (
-    <ObservationCard 
+    <ObservationCard
       observation={item}
       onDelete={() => handleDeleteObservation(item)}
       onToggleFavorite={() => handleToggleFavorite(item)}
@@ -103,15 +71,12 @@ const CompletedObservations: React.FC<Props> = ({
   ), [handleDeleteObservation, handleToggleFavorite, handleReactivate]);
 
   const renderEmptyComponent = () => (
-    <EmptyContainer>
-      <EmptyIcon>✅</EmptyIcon>
-      <EmptyText>Nenhuma observação concluída</EmptyText>
-      <EmptySubText>
-        Quando você marcar observações como concluídas, elas aparecerão aqui.
-        {'\n\n'}
-        Vá para a aba "Ativas" e marque algumas observações como concluídas.
-      </EmptySubText>
-    </EmptyContainer>
+    <EmptyState
+      icon='✅'
+      text='Nenhuma observação concluída'
+      subtext='Quando você marcar observações como concluídas, elas aparecerão aqui.'
+      secondSubText='Vá para a aba "Ativas" e marque algumas observações como concluídas.'
+    />
   );
 
   return (
@@ -120,7 +85,7 @@ const CompletedObservations: React.FC<Props> = ({
         data={completedObservations}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={{ 
+        contentContainerStyle={{
           paddingVertical: 8,
           flexGrow: 1,
         }}

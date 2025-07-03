@@ -5,7 +5,7 @@ import ObservationCard from '../components/ObservationCard';
 import { Container } from '../styles/screens/home';
 import { Observation } from '../types/observations';
 import { useObservations } from '../hooks/useObservation';
-import { EmptyContainer, EmptyIcon, EmptyText, EmptySubText } from '../styles/screens/favorite';
+import EmptyState from '../components/EmptyState';
 
 interface Props {
   observations: Observation[];
@@ -13,15 +13,15 @@ interface Props {
   refreshing: boolean;
 }
 
-const ActiveObservations: React.FC<Props> = ({ 
-  observations, 
-  onRefresh, 
-  refreshing 
+const ActiveObservations: React.FC<Props> = ({
+  observations,
+  onRefresh,
+  refreshing
 }) => {
-  const { 
-    removeObservation, 
+  const {
+    removeObservation,
     toggleObservationFavorite,
-    toggleObservationCompleted 
+    toggleObservationCompleted
   } = useObservations();
   const activeObservations = observations.filter(obs => !obs.isCompleted);
 
@@ -31,8 +31,8 @@ const ActiveObservations: React.FC<Props> = ({
       `Deseja realmente excluir a observação sobre ${observation.studentName}?`,
       [
         { text: 'Cancelar', style: 'cancel' },
-        { 
-          text: 'Excluir', 
+        {
+          text: 'Excluir',
           style: 'destructive',
           onPress: () => removeObservation(observation.id)
         }
@@ -50,8 +50,8 @@ const ActiveObservations: React.FC<Props> = ({
       `Deseja marcar a observação sobre ${observation.studentName} como concluída?`,
       [
         { text: 'Cancelar', style: 'cancel' },
-        { 
-          text: 'Concluir', 
+        {
+          text: 'Concluir',
           onPress: () => toggleObservationCompleted(observation)
         }
       ]
@@ -59,7 +59,7 @@ const ActiveObservations: React.FC<Props> = ({
   }, [toggleObservationCompleted]);
 
   const renderItem = useCallback(({ item }: { item: Observation }) => (
-    <ObservationCard 
+    <ObservationCard
       observation={item}
       onDelete={() => handleDeleteObservation(item)}
       onToggleFavorite={() => handleToggleFavorite(item)}
@@ -69,15 +69,12 @@ const ActiveObservations: React.FC<Props> = ({
   ), [handleDeleteObservation, handleToggleFavorite, handleToggleCompleted]);
 
   const renderEmptyComponent = () => (
-    <EmptyContainer>
-      <EmptyIcon>📝</EmptyIcon>
-      <EmptyText>Nenhuma observação ativa</EmptyText>
-      <EmptySubText>
-        Todas as suas observações foram concluídas!
-        {'\n\n'}
-        Adicione novas observações ou verifique a aba "Concluídas" para ver o histórico.
-      </EmptySubText>
-    </EmptyContainer>
+    <EmptyState
+      icon='📝'
+      text='Nenhuma observação ativa'
+      subtext='Todas as suas observações foram concluídas!'
+      secondSubText='Adicione novas observações ou verifique a aba "Concluídas" para ver o histórico.'
+    />
   );
 
   return (
@@ -86,7 +83,7 @@ const ActiveObservations: React.FC<Props> = ({
         data={activeObservations}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={{ 
+        contentContainerStyle={{
           paddingVertical: 8,
           flexGrow: 1,
         }}

@@ -13,7 +13,6 @@ export interface CreateObservationData {
   observation: string;
 }
 
-
 export interface ObservationsState {
   items: Observation[];
   status: 'idle' | 'loading' | 'succeeded' | 'failed';

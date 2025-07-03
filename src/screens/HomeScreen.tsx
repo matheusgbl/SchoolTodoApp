@@ -9,7 +9,7 @@ import ActiveObservations from './ActiveObservations';
 import CompletedObservations from './CompletedObservations';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import AddButton from '../components/AddButon';
+import AddButton from '../components/AddButton';
 import { ErrorContainer, ErrorText, RetryButton, RetryButtonText, Container, LoadingContainer } from '../styles/screens/home';
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'MainTabs'>;

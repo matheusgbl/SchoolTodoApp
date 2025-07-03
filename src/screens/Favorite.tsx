@@ -5,14 +5,11 @@ import { Observation } from '../types/observations';
 import { useObservations } from '../hooks/useObservation';
 import ObservationCard from '../components/ObservationCard';
 import { Container,
-  EmptyContainer,
-  EmptyIcon,
-  EmptySubText,
-  EmptyText,
   HeaderContainer,
   HeaderText,
   LoadingContainer
 } from '../styles/screens/favorite';
+import EmptyState from '../components/EmptyState';
 
 const FavoritesScreen = () => {
   const {
@@ -49,15 +46,12 @@ const FavoritesScreen = () => {
   ), [handleDeleteObservation, handleToggleFavorite]);
 
   const renderEmptyComponent = () => (
-    <EmptyContainer>
-      <EmptyIcon>⭐</EmptyIcon>
-      <EmptyText>Nenhuma observação favorita</EmptyText>
-      <EmptySubText>
-        Marque suas observações mais importantes como favoritas para encontrá-las facilmente aqui.
-        {'\n\n'}
-        Toque no ícone de estrela em qualquer observação para adicioná-la aos favoritos.
-      </EmptySubText>
-    </EmptyContainer>
+    <EmptyState
+      icon='⭐'
+      text='Nenhuma observação favorita'
+      subtext='Marque suas observações mais importantes como favoritas para encontrá-las facilmente aqui.'
+      secondSubText='Toque no ícone de estrela em qualquer observação para adicioná-la aos favoritos.'
+    />
   );
 
   const renderHeader = () => (
@@ -75,7 +69,7 @@ const FavoritesScreen = () => {
     return (
       <Container>
         <LoadingContainer>
-          <ActivityIndicator size="large" color="#4A90E2" />
+          <ActivityIndicator size="large" color="#7f42d9" testID='ActivityIndicator' />
         </LoadingContainer>
       </Container>
     );

@@ -9,8 +9,8 @@ interface Props {
 const AddButton: React.FC<Props> = ({ onAddPress }) => {
 
   return (
-    <Button onPress={onAddPress}>
-      <Icon name="plus" size={30} color="white" />
+    <Button onPress={onAddPress} testID="add-button">
+      <Icon name="plus" size={30} color="white" testID="plus-icon" />
     </Button>
   );
 };
