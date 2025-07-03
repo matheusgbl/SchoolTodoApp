@@ -17,14 +17,6 @@
       "createdAt": "2025-07-01T14:30:00Z"
     },
     {
-      "id": "3",
-      "studentName": "Beatriz Costa",
-      "observation": "Entregou o trabalho de artes com muito capricho e criatividade.",
-      "isFavorite": false,
-      "isCompleted": false,
-      "createdAt": "2025-06-30T11:00:00Z"
-    },
-    {
       "id": "5daa",
       "studentName": "Matheus",
       "observation": "Criando mais um",
@@ -37,8 +29,9 @@
       "studentName": "Novo aluno",
       "observation": "Nova observação",
       "isFavorite": false,
-      "isCompleted": false,
-      "createdAt": "2025-07-03T15:24:02.690Z"
+      "isCompleted": true,
+      "createdAt": "2025-07-03T15:24:02.690Z",
+      "completedAt": "2025-07-03T23:13:15.677Z"
     },
     {
       "id": "a609",
@@ -47,6 +40,14 @@
       "isFavorite": false,
       "isCompleted": false,
       "createdAt": "2025-07-03T19:54:41.737Z"
+    },
+    {
+      "id": "3fa9",
+      "studentName": "Nome aluno",
+      "observation": "Nova obs 1234",
+      "isFavorite": false,
+      "isCompleted": false,
+      "createdAt": "2025-07-03T23:13:07.143Z"
     }
   ]
 }
