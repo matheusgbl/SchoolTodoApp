@@ -8,19 +8,63 @@ import {
   deleteObservation,
   resetCreateStatus,
   clearError,
+  resetPagination,
+  CreateObservationData,
+  FetchObservationsParams
 } from '../store/slices/observationSlice';
 import { useCallback } from 'react';
-import { showSuccess, showError } from '../components/Toast'; // Importe suas funções de toast
-import { CreateObservationData } from '../types/observations';
+import { showSuccess, showError } from '../components/Toast';
 
 export const useObservations = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { items, status, createStatus, error } = useSelector((state: RootState) => state.observations);
+  const { items, status, createStatus, error, pagination } = useSelector((state: RootState) => state.observations);
 
-  // Buscar observações
-  const loadObservations = useCallback(() => {
-    dispatch(fetchObservations());
+  // Buscar observações com paginação
+  const loadObservations = useCallback((params: FetchObservationsParams = {}) => {
+    dispatch(fetchObservations(params));
   }, [dispatch]);
+
+  // Navegar para a próxima página
+  const goToNextPage = useCallback((filter?: 'all' | 'active' | 'completed' | 'favorites') => {
+    if (pagination.hasNextPage) {
+      loadObservations({
+        page: pagination.currentPage + 1,
+        limit: pagination.itemsPerPage,
+        filter,
+      });
+    }
+  }, [loadObservations, pagination]);
+
+  // Navegar para a página anterior
+  const goToPreviousPage = useCallback((filter?: 'all' | 'active' | 'completed' | 'favorites') => {
+    if (pagination.hasPreviousPage) {
+      loadObservations({
+        page: pagination.currentPage - 1,
+        limit: pagination.itemsPerPage,
+        filter,
+      });
+    }
+  }, [loadObservations, pagination]);
+
+  // Navegar para uma página específica
+  const goToPage = useCallback((page: number, filter?: 'all' | 'active' | 'completed' | 'favorites') => {
+    if (page >= 1 && page <= pagination.totalPages) {
+      loadObservations({
+        page,
+        limit: pagination.itemsPerPage,
+        filter,
+      });
+    }
+  }, [loadObservations, pagination]);
+
+  // Recarregar a página atual
+  const refreshCurrentPage = useCallback((filter?: 'all' | 'active' | 'completed' | 'favorites') => {
+    loadObservations({
+      page: pagination.currentPage,
+      limit: pagination.itemsPerPage,
+      filter,
+    });
+  }, [loadObservations, pagination]);
 
   // Criar nova observação
   const addObservation = useCallback(async (data: CreateObservationData) => {
@@ -28,13 +72,15 @@ export const useObservations = () => {
       const result = await dispatch(createObservation(data));
       if (createObservation.fulfilled.match(result)) {
         showSuccess('Observação adicionada com sucesso!');
+        // Recarregar a primeira página para mostrar o novo item
+        loadObservations({ page: 1, limit: pagination.itemsPerPage });
       }
       return result;
     } catch (err) {
       showError('Erro ao adicionar observação');
       throw err;
     }
-  }, [dispatch]);
+  }, [dispatch, loadObservations, pagination.itemsPerPage]);
 
   // Alternar favorito
   const toggleObservationFavorite = useCallback(async (observation: any) => {
@@ -71,18 +117,26 @@ export const useObservations = () => {
   }, [dispatch]);
 
   // Deletar observação
-  const removeObservation = useCallback(async (id: string) => {
+  const removeObservation = useCallback(async (id: string, filter?: 'all' | 'active' | 'completed' | 'favorites') => {
     try {
       const result = await dispatch(deleteObservation(id));
       if (deleteObservation.fulfilled.match(result)) {
         showSuccess('Observação removida com sucesso!');
+
+        // Se a página atual ficou vazia e não é a primeira página, voltar uma página
+        if (items.length === 1 && pagination.currentPage > 1) {
+          goToPreviousPage(filter);
+        } else {
+          // Caso contrário, recarregar a página atual
+          refreshCurrentPage(filter);
+        }
       }
       return result;
     } catch (err) {
       showError('Erro ao remover observação');
       throw err;
     }
-  }, [dispatch]);
+  }, [dispatch, items.length, pagination.currentPage, goToPreviousPage, refreshCurrentPage]);
 
   // Reset do status de criação
   const resetCreateState = useCallback(() => {
@@ -94,18 +148,51 @@ export const useObservations = () => {
     dispatch(clearError());
   }, [dispatch]);
 
+  // Reset da paginação
+  const resetPaginationState = useCallback(() => {
+    dispatch(resetPagination());
+  }, [dispatch]);
+
+  // Filtrar observações localmente (para uso em componentes que precisam de filtros rápidos)
+  const getFilteredObservations = useCallback((filter: 'all' | 'active' | 'completed' | 'favorites') => {
+    switch (filter) {
+      case 'active':
+        return items.filter(obs => !obs.isCompleted);
+      case 'completed':
+        return items.filter(obs => obs.isCompleted);
+      case 'favorites':
+        return items.filter(obs => obs.isFavorite);
+      default:
+        return items;
+    }
+  }, [items]);
+
   return {
+    // Dados
     observations: items,
     status,
     createStatus,
     error,
+    pagination,
+
+    // Ações básicas
     loadObservations,
     addObservation,
     toggleObservationFavorite,
     toggleObservationCompleted,
     removeObservation,
+
+    // Ações de paginação
+    goToNextPage,
+    goToPreviousPage,
+    goToPage,
+    refreshCurrentPage,
+
+    // Utilitários
     resetCreateState,
     clearErrors,
+    resetPaginationState,
+    getFilteredObservations,
   };
 };
 

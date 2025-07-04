@@ -1,11 +1,46 @@
-/* eslint-disable react-native/no-inline-styles */
 import React, { useCallback } from 'react';
 import { FlatList, Alert } from 'react-native';
-import ObservationCard from '../components/ObservationCard';
-import { Container } from '../styles/screens/home';
-import { Observation } from '../types/observations';
+import styled from 'styled-components/native';
 import { useObservations } from '../hooks/useObservation';
-import EmptyState from '../components/EmptyState';
+import { Observation } from '../store/slices/observationSlice';
+import ObservationCard from '../components/ObservationCard';
+
+const Container = styled.View`
+  flex: 1;
+  background-color: ${({ theme }) => theme.colors.background};
+`;
+
+const EmptyContainer = styled.View`
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  padding: ${({ theme }) => theme.spacing.large}px;
+`;
+
+const EmptyIcon = styled.Text`
+  font-size: 64px;
+  margin-bottom: ${({ theme }) => theme.spacing.medium}px;
+`;
+
+const EmptyText = styled.Text`
+  font-size: 18px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  text-align: center;
+  margin-bottom: ${({ theme }) => theme.spacing.medium}px;
+  font-weight: 600;
+`;
+
+const EmptySubText = styled.Text`
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  text-align: center;
+  line-height: 20px;
+`;
+
+const ListContainer = styled.View`
+  flex: 1;
+  padding-bottom: 20px;
+`;
 
 interface Props {
   observations: Observation[];
@@ -13,7 +48,7 @@ interface Props {
   refreshing: boolean;
 }
 
-const ActiveObservations: React.FC<Props> = ({
+const ActiveObservationsScreen: React.FC<Props> = ({
   observations,
   onRefresh,
   refreshing
@@ -23,6 +58,8 @@ const ActiveObservations: React.FC<Props> = ({
     toggleObservationFavorite,
     toggleObservationCompleted
   } = useObservations();
+
+  // Filtrar apenas observações ativas (não concluídas)
   const activeObservations = observations.filter(obs => !obs.isCompleted);
 
   const handleDeleteObservation = useCallback((observation: Observation) => {
@@ -34,7 +71,7 @@ const ActiveObservations: React.FC<Props> = ({
         {
           text: 'Excluir',
           style: 'destructive',
-          onPress: () => removeObservation(observation.id)
+          onPress: () => removeObservation(observation.id, 'all')
         }
       ]
     );
@@ -69,31 +106,44 @@ const ActiveObservations: React.FC<Props> = ({
   ), [handleDeleteObservation, handleToggleFavorite, handleToggleCompleted]);
 
   const renderEmptyComponent = () => (
-    <EmptyState
-      icon='📝'
-      text='Nenhuma observação ativa'
-      subtext='Todas as suas observações foram concluídas!'
-      secondSubText='Adicione novas observações ou verifique a aba "Concluídas" para ver o histórico.'
-    />
+    <EmptyContainer>
+      <EmptyIcon>📝</EmptyIcon>
+      <EmptyText>Nenhuma observação ativa nesta página</EmptyText>
+      <EmptySubText>
+        {observations.length === 0
+          ? 'Todas as suas observações foram concluídas!\n\nAdicione novas observações ou verifique a aba "Concluídas" para ver o histórico.'
+          : 'Todas as observações desta página estão concluídas.\n\nVerifique outras páginas ou a aba "Concluídas".'
+        }
+      </EmptySubText>
+    </EmptyContainer>
   );
 
   return (
     <Container>
-      <FlatList
-        data={activeObservations}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={{
-          paddingVertical: 8,
-          flexGrow: 1,
-        }}
-        onRefresh={onRefresh}
-        refreshing={refreshing}
-        ListEmptyComponent={renderEmptyComponent}
-        showsVerticalScrollIndicator={false}
-      />
+      <ListContainer>
+        <FlatList
+          data={activeObservations}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={{
+            paddingVertical: 8,
+            flexGrow: 1,
+          }}
+          onRefresh={onRefresh}
+          refreshing={refreshing}
+          ListEmptyComponent={renderEmptyComponent}
+          showsVerticalScrollIndicator={false}
+          // Otimizações para performance
+          removeClippedSubviews={true}
+          maxToRenderPerBatch={5}
+          updateCellsBatchingPeriod={50}
+          initialNumToRender={5}
+          windowSize={10}
+        />
+      </ListContainer>
     </Container>
   );
 };
 
-export default ActiveObservations;
+export default ActiveObservationsScreen;
+
