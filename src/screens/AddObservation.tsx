@@ -106,12 +106,10 @@ const AddObservationScreen = () => {
           <FormContainer>
             <Title>Nova Observação</Title>
 
-            {/* Exibir erros de validação */}
             {validationErrors.map((err, index) => (
               <ErrorText key={index}>{err}</ErrorText>
             ))}
 
-            {/* Exibir erro da API */}
             {error && <ErrorText>{error}</ErrorText>}
 
             <Label>Nome do Aluno *</Label>
@@ -121,6 +119,7 @@ const AddObservationScreen = () => {
               placeholder="Digite o nome do aluno"
               placeholderTextColor="#999"
               editable={!isLoading}
+              maxLength={40}
             />
 
             <Label>Observação *</Label>
@@ -132,6 +131,7 @@ const AddObservationScreen = () => {
               multiline
               numberOfLines={4}
               editable={!isLoading}
+              maxLength={80}
             />
 
             <ButtonContainer>

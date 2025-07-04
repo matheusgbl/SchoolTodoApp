@@ -58,14 +58,22 @@ const mockDispatch = jest.fn().mockImplementation((action) => {
   return Promise.resolve(action);
 });
 
-const mockState = {
-  observations: {
-    items: [],
-    status: 'idle',
-    createStatus: 'idle',
-    error: null,
-  },
-};
+ const mockState = {
+     observations: {
+       items: [],
+       status: 'idle',
+       createStatus: 'idle',
+       error: null,
+       pagination: {
+         currentPage: 1,
+         totalPages: 1,
+         totalItems: 0,
+         itemsPerPage: 5, // Certifique-se que isso está presente
+         hasNextPage: false,
+         hasPreviousPage: false,
+       },
+     },
+   };
 
 function TestComponent({ callback }: { callback: (hook: ReturnType<typeof useObservations>) => void }) {
   callback(useObservations());
@@ -92,23 +100,20 @@ describe('useObservations', () => {
     deleteObservation.fulfilled.match.mockReturnValue(true);
   });
 
-  it('dispatches fetchObservations em loadObservations', () => {
-    let hook!: ReturnType<typeof useObservations>;
-    render(<TestComponent callback={(h) => { hook = h; }} />);
-
-    act(() => {
-      hook.loadObservations();
-    });
-
-    expect(mockDispatch).toHaveBeenCalledWith(expect.objectContaining({ type: 'fetchObservations' }));
+  it('dispatches fetchObservations on loadObservations', () => {
+  let hook!: ReturnType<typeof useObservations>;
+  render(<TestComponent callback={(h) => { hook = h; }} />);
+  act(() => {
+    hook.loadObservations({ page: 1, limit: 5, filter: 'all' });
   });
 
-  it('chama showSuccess quando addObservation é fulfilled', async () => {
-    const mockData = { studentName: 'João', observation: 'Teste' };
+  expect(mockDispatch).toHaveBeenCalledWith(expect.objectContaining({ type: 'fetchObservations' }));
+});
 
+  it('calls showSuccess when addObservation its fulfilled', async () => {
+    const mockData = { studentName: 'João', observation: 'Teste' };
     let hook!: ReturnType<typeof useObservations>;
     render(<TestComponent callback={(h) => { hook = h; }} />);
-
     await act(async () => {
       await hook.addObservation(mockData as any);
     });
@@ -117,14 +122,12 @@ describe('useObservations', () => {
     expect(showSuccess).toHaveBeenCalledWith('Observação adicionada com sucesso!');
   });
 
-  it('chama showError quando addObservation falha', async () => {
+  it('calls showError when addObservation falha', async () => {
     mockDispatch.mockImplementationOnce(() => {
       throw new Error('Erro ao criar');
     });
-
     let hook!: ReturnType<typeof useObservations>;
     render(<TestComponent callback={(h) => { hook = h; }} />);
-
     await act(async () => {
       await expect(hook.addObservation({} as any)).rejects.toThrow('Erro ao criar');
     });
@@ -132,12 +135,10 @@ describe('useObservations', () => {
     expect(showError).toHaveBeenCalledWith('Erro ao adicionar observação');
   });
 
-  it('chama toggleFavorite e mostra toast', async () => {
+  it('calls toggleFavorite and show toast', async () => {
     const obs = { id: '1', isFavorite: false };
-
     let hook!: ReturnType<typeof useObservations>;
     render(<TestComponent callback={(h) => { hook = h; }} />);
-
     await act(async () => {
       await hook.toggleObservationFavorite(obs);
     });
@@ -146,12 +147,10 @@ describe('useObservations', () => {
     expect(showSuccess).toHaveBeenCalledWith('Adicionado aos favoritos');
   });
 
-  it('chama toggleCompleted e mostra toast', async () => {
+  it('call toggleCompleted and show toast', async () => {
     const obs = { id: '1', isCompleted: false };
-
     let hook!: ReturnType<typeof useObservations>;
     render(<TestComponent callback={(h) => { hook = h; }} />);
-
     await act(async () => {
       await hook.toggleObservationCompleted(obs);
     });

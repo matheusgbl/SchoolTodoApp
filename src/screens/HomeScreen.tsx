@@ -1,103 +1,47 @@
 import React, { useEffect } from 'react';
-import { SafeAreaView, ActivityIndicator } from 'react-native';
+import { ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { StackNavigationProp } from '@react-navigation/stack';
-import styled from 'styled-components/native';
 import { useObservations } from '../hooks/useObservation';
+import { useObservationPagination, TabType } from '../hooks/useObservationPagination';
 import ActiveObservationsScreen from './ActiveObservations';
 import CompletedObservationsScreen from './CompletedObservations';
 import PaginationFooter from '../components/PaginationFooter';
 import { RootStackParamList } from '../navigation/AppNavigator';
+import { ErrorContainer, ErrorText, RetryButton, RetryButtonText, Container, LoadingContainer } from '../styles/screens/home';
+import AddButton from '../components/AddButton';
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'MainTabs'>;
 
 const Tab = createMaterialTopTabNavigator();
-
-const Container = styled(SafeAreaView)`
-  flex: 1;
-  background-color: ${({ theme }) => theme.colors.background};
-`;
-
-const LoadingContainer = styled.View`
-  flex: 1;
-  justify-content: center;
-  align-items: center;
-`;
-
-const FloatingButton = styled.TouchableOpacity`
-  position: absolute;
-  bottom: 80px; /* Ajustado para ficar acima da paginação */
-  right: 20px;
-  width: 56px;
-  height: 56px;
-  border-radius: 28px;
-  background-color: ${({ theme }) => theme.colors.primary};
-  justify-content: center;
-  align-items: center;
-  shadow-color: #000;
-  shadow-offset: 0px 4px;
-  shadow-opacity: 0.3;
-  shadow-radius: 6px;
-  elevation: 8;
-  z-index: 1000;
-`;
-
-const FloatingButtonText = styled.Text`
-  color: ${({ theme }) => theme.colors.white};
-  font-size: 24px;
-  font-weight: bold;
-`;
-
-const ErrorContainer = styled.View`
-  padding: ${({ theme }) => theme.spacing.medium}px;
-  margin: ${({ theme }) => theme.spacing.medium}px;
-  background-color: #FFF5F5;
-  border: 1px solid #FEB2B2;
-  border-radius: 8px;
-`;
-
-const ErrorText = styled.Text`
-  color: #C53030;
-  text-align: center;
-  font-size: 16px;
-`;
-
-const RetryButton = styled.TouchableOpacity`
-  margin-top: ${({ theme }) => theme.spacing.medium}px;
-  padding: ${({ theme }) => theme.spacing.small}px ${({ theme }) => theme.spacing.medium}px;
-  background-color: ${({ theme }) => theme.colors.primary};
-  border-radius: 6px;
-  align-self: center;
-`;
-
-const RetryButtonText = styled.Text`
-  color: ${({ theme }) => theme.colors.white};
-  font-weight: 600;
-`;
-
-const TabContainer = styled.View`
-  flex: 1;
-`;
 
 const HomeScreen = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
   const {
     observations,
     status,
-    pagination,
     loadObservations,
+  } = useObservations();
+
+  const [activeTab, setActiveTab] = React.useState<TabType>('active');
+
+  const {
+    activePagination,
+    completedPagination,
+    paginatedActiveObservations,
+    paginatedCompletedObservations,
     goToNextPage,
     goToPreviousPage,
     goToPage,
-  } = useObservations();
-
-  // Estado para controlar qual aba está ativa
-  const [, setActiveTab] = React.useState<'active' | 'completed'>('active');
+  } = useObservationPagination({
+    observations,
+    itemsPerPage: 5
+  });
 
   useEffect(() => {
     if (status === 'idle') {
-      loadObservations({ page: 1, limit: 5, filter: 'all' });
+      loadObservations({ page: 1, limit: 100, filter: 'all' }); // Carregar todas as observações
     }
   }, [status, loadObservations]);
 
@@ -106,27 +50,28 @@ const HomeScreen = () => {
   };
 
   const handlePreviousPage = () => {
-    goToPreviousPage('all');
+    goToPreviousPage(activeTab);
   };
 
   const handleNextPage = () => {
-    goToNextPage('all');
+    goToNextPage(activeTab);
   };
 
   const handleGoToPage = (page: number) => {
-    goToPage(page, 'all');
+    goToPage(page, activeTab);
   };
 
   const renderErrorComponent = () => (
     <ErrorContainer>
       <ErrorText>Erro ao carregar observações</ErrorText>
-      <RetryButton onPress={() => loadObservations({ page: 1, limit: 5, filter: 'all' })}>
+      <RetryButton onPress={() => loadObservations({ page: 1, limit: 100, filter: 'all' })}>
         <RetryButtonText>Tentar novamente</RetryButtonText>
       </RetryButton>
     </ErrorContainer>
   );
 
-  // Contar observações ativas e concluídas
+  const currentPagination = activeTab === 'active' ? activePagination : completedPagination;
+
   const activeCount = observations.filter(obs => !obs.isCompleted).length;
   const completedCount = observations.filter(obs => obs.isCompleted).length;
 
@@ -134,11 +79,9 @@ const HomeScreen = () => {
     return (
       <Container>
         <LoadingContainer>
-          <ActivityIndicator size="large" color="#4A90E2" />
+          <ActivityIndicator size="large" color="#7f42d9" />
         </LoadingContainer>
-        <FloatingButton onPress={handleAddObservation}>
-          <FloatingButtonText>+</FloatingButtonText>
-        </FloatingButton>
+        <AddButton onAddPress={handleAddObservation} />
       </Container>
     );
   }
@@ -147,22 +90,19 @@ const HomeScreen = () => {
     return (
       <Container>
         {renderErrorComponent()}
-        <FloatingButton onPress={handleAddObservation}>
-          <FloatingButtonText>+</FloatingButtonText>
-        </FloatingButton>
+        <AddButton onAddPress={handleAddObservation} />
       </Container>
     );
   }
 
   return (
     <Container>
-      <TabContainer>
         <Tab.Navigator
           screenOptions={{
-            tabBarActiveTintColor: '#4A90E2',
+            tabBarActiveTintColor: '#7f42d9',
             tabBarInactiveTintColor: '#888888',
             tabBarIndicatorStyle: {
-              backgroundColor: '#4A90E2',
+              backgroundColor: '#7f42d9',
               height: 3,
             },
             tabBarLabelStyle: {
@@ -198,8 +138,8 @@ const HomeScreen = () => {
           >
             {() => (
               <ActiveObservationsScreen
-                observations={observations}
-                onRefresh={() => loadObservations({ page: pagination.currentPage, limit: 5, filter: 'all' })}
+                observations={paginatedActiveObservations}
+                onRefresh={() => loadObservations({ page: 1, limit: 100, filter: 'all' })}
                 refreshing={status === 'loading'}
               />
             )}
@@ -213,30 +153,35 @@ const HomeScreen = () => {
           >
             {() => (
               <CompletedObservationsScreen
-                observations={observations}
-                onRefresh={() => loadObservations({ page: pagination.currentPage, limit: 5, filter: 'all' })}
+                observations={paginatedCompletedObservations}
+                onRefresh={() => loadObservations({ page: 1, limit: 100, filter: 'all' })}
                 refreshing={status === 'loading'}
               />
             )}
           </Tab.Screen>
         </Tab.Navigator>
-      </TabContainer>
 
-      {/* Componente de Paginação */}
-      <PaginationFooter
-        pagination={pagination}
-        onPreviousPage={handlePreviousPage}
-        onNextPage={handleNextPage}
-        onGoToPage={handleGoToPage}
-        loading={status === 'loading'}
-      />
+      {/* Componente de Paginação - só mostra se há mais de uma página */}
+      {currentPagination.totalPages > 1 && (
+        <PaginationFooter
+          pagination={{
+            currentPage: currentPagination.currentPage,
+            totalPages: currentPagination.totalPages,
+            totalItems: currentPagination.totalItems,
+            itemsPerPage: currentPagination.itemsPerPage,
+            hasNextPage: currentPagination.hasNextPage,
+            hasPreviousPage: currentPagination.hasPreviousPage,
+          }}
+          onPreviousPage={handlePreviousPage}
+          onNextPage={handleNextPage}
+          onGoToPage={handleGoToPage}
+          loading={status === 'loading'}
+        />
+      )}
 
-      <FloatingButton onPress={handleAddObservation}>
-        <FloatingButtonText>+</FloatingButtonText>
-      </FloatingButton>
+      <AddButton onAddPress={handleAddObservation} />
     </Container>
   );
 };
 
 export default HomeScreen;
-

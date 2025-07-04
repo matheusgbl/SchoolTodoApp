@@ -1,81 +1,7 @@
 import React from 'react';
-import styled from 'styled-components/native';
 import { PaginationInfo } from '../store/slices/observationSlice';
-
-const FooterContainer = styled.View`
-  background-color: ${({ theme }) => theme.colors.card};
-  border-top-width: 1px;
-  border-top-color: #E1E5E9;
-  padding: ${({ theme }) => theme.spacing.medium}px;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  min-height: 60px;
-`;
-
-const PaginationContainer = styled.View`
-  flex-direction: row;
-  align-items: center;
-  flex: 1;
-  justify-content: center;
-`;
-
-const PageButton = styled.TouchableOpacity<{ disabled?: boolean; variant?: 'primary' | 'secondary' }>`
-  padding: ${({ theme }) => theme.spacing.small}px ${({ theme }) => theme.spacing.medium}px;
-  border-radius: 6px;
-  margin: 0 ${({ theme }) => theme.spacing.small / 2}px;
-  background-color: ${({ disabled, variant, theme }) => {
-    if (disabled) return '#F5F5F5';
-    if (variant === 'primary') return theme.colors.primary;
-    return 'transparent';
-  }};
-  border: 1px solid ${({ disabled, variant, theme }) => {
-    if (disabled) return '#E1E5E9';
-    if (variant === 'primary') return theme.colors.primary;
-    return '#E1E5E9';
-  }};
-  min-width: 40px;
-  align-items: center;
-  opacity: ${({ disabled }) => disabled ? 0.5 : 1};
-`;
-
-const PageButtonText = styled.Text<{ disabled?: boolean; variant?: 'primary' | 'secondary' }>`
-  color: ${({ disabled, variant, theme }) => {
-    if (disabled) return '#999';
-    if (variant === 'primary') return theme.colors.white;
-    return theme.colors.text;
-  }};
-  font-weight: ${({ variant }) => variant === 'primary' ? '600' : '500'};
-  font-size: 14px;
-`;
-
-const PageInfo = styled.View`
-  margin: 0 ${({ theme }) => theme.spacing.medium}px;
-  align-items: center;
-`;
-
-const PageInfoText = styled.Text`
-  color: ${({ theme }) => theme.colors.textSecondary};
-  font-size: 12px;
-  text-align: center;
-`;
-
-const PageInfoNumbers = styled.Text`
-  color: ${({ theme }) => theme.colors.text};
-  font-size: 14px;
-  font-weight: 600;
-  margin-top: 2px;
-`;
-
-const ItemsInfo = styled.View`
-  position: absolute;
-  left: ${({ theme }) => theme.spacing.medium}px;
-`;
-
-const ItemsInfoText = styled.Text`
-  color: ${({ theme }) => theme.colors.textSecondary};
-  font-size: 12px;
-`;
+import { FooterContainer, PaginationContainer, PageButton, PageButtonText } from '../styles/components/paginationFooter';
+import Icon from '@react-native-vector-icons/fontawesome';
 
 interface Props {
   pagination: PaginationInfo;
@@ -92,7 +18,7 @@ const PaginationFooter: React.FC<Props> = ({
   onGoToPage,
   loading = false,
 }) => {
-  const { currentPage, totalPages, totalItems, itemsPerPage, hasNextPage, hasPreviousPage } = pagination;
+  const { currentPage, totalPages, hasNextPage, hasPreviousPage } = pagination;
 
   // Calcular quais páginas mostrar
   const getVisiblePages = () => {
@@ -125,8 +51,6 @@ const PaginationFooter: React.FC<Props> = ({
   };
 
   const visiblePages = getVisiblePages();
-  const startItem = (currentPage - 1) * itemsPerPage + 1;
-  const endItem = Math.min(currentPage * itemsPerPage, totalItems);
 
   if (totalPages <= 1) {
     return null; // Não mostrar paginação se há apenas uma página
@@ -134,11 +58,6 @@ const PaginationFooter: React.FC<Props> = ({
 
   return (
     <FooterContainer>
-      <ItemsInfo>
-        <ItemsInfoText>
-          {totalItems > 0 ? `${startItem}-${endItem} de ${totalItems}` : 'Nenhum item'}
-        </ItemsInfoText>
-      </ItemsInfo>
 
       <PaginationContainer>
         {/* Botão Anterior */}
@@ -146,7 +65,7 @@ const PaginationFooter: React.FC<Props> = ({
           disabled={!hasPreviousPage || loading}
           onPress={onPreviousPage}
         >
-          <PageButtonText disabled={!hasPreviousPage || loading}>‹</PageButtonText>
+          <Icon name='arrow-left' size={20} color="white" />
         </PageButton>
 
         {/* Primeira página (se não estiver visível) */}
@@ -155,9 +74,6 @@ const PaginationFooter: React.FC<Props> = ({
             <PageButton onPress={() => onGoToPage(1)} disabled={loading}>
               <PageButtonText disabled={loading}>1</PageButtonText>
             </PageButton>
-            {visiblePages[0] > 2 && (
-              <PageInfoText>...</PageInfoText>
-            )}
           </>
         )}
 
@@ -181,9 +97,6 @@ const PaginationFooter: React.FC<Props> = ({
         {/* Última página (se não estiver visível) */}
         {visiblePages[visiblePages.length - 1] < totalPages && (
           <>
-            {visiblePages[visiblePages.length - 1] < totalPages - 1 && (
-              <PageInfoText>...</PageInfoText>
-            )}
             <PageButton onPress={() => onGoToPage(totalPages)} disabled={loading}>
               <PageButtonText disabled={loading}>{totalPages}</PageButtonText>
             </PageButton>
@@ -195,14 +108,9 @@ const PaginationFooter: React.FC<Props> = ({
           disabled={!hasNextPage || loading}
           onPress={onNextPage}
         >
-          <PageButtonText disabled={!hasNextPage || loading}>›</PageButtonText>
+          <Icon name='arrow-right' size={20} color="white" />
         </PageButton>
       </PaginationContainer>
-
-      <PageInfo>
-        <PageInfoText>Página</PageInfoText>
-        <PageInfoNumbers>{currentPage} de {totalPages}</PageInfoNumbers>
-      </PageInfo>
     </FooterContainer>
   );
 };

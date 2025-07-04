@@ -8,7 +8,13 @@ import {
 import apiClient from '../../api/client';
 import { Observation, CreateObservationData } from '../../types/observations';
 
-jest.mock('../../api/client');
+jest.mock('../../api/client', () => ({
+  get: jest.fn(),
+  post: jest.fn(),
+  put: jest.fn(),
+  delete: jest.fn(),
+}));
+
 
 describe('observations async thunks', () => {
   let dispatch: jest.Mock;
@@ -21,24 +27,41 @@ describe('observations async thunks', () => {
   });
 
   describe('fetchObservations', () => {
-    it('dispatches fulfilled action with data on success', async () => {
-      const mockData: Observation[] = [
-        { id: '1', studentName: 'Alice', observation: 'Test', isFavorite: false, isCompleted: false, createdAt: '2023-01-01' },
-      ];
+       it('dispatches fulfilled action with data on success', async () => {
+     const mockData: Observation[] = [
+       { id: '1', studentName: 'Alice', observation: 'Test', isFavorite: false, isCompleted: false, createdAt: '2023-01-01' },
+     ];
+     (apiClient.get as jest.Mock).mockResolvedValue({
+       data: mockData,
+       headers: { 'x-total-count': '1' },
+     });
 
-      (apiClient.get as jest.Mock).mockResolvedValue({ data: mockData });
+     // Past the correct parameters
+     await fetchObservations({ page: 1, limit: 5, filter: 'all' })(dispatch, getState, undefined);
 
-      await fetchObservations()(dispatch, getState, undefined);
+     expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({ type: fetchObservations.pending.type }));
+     expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+       type: fetchObservations.fulfilled.type,
+       payload: {
+         items: mockData,
+         pagination: {
+           currentPage: 1,
+           totalPages: 1,
+           totalItems: 1,
+           itemsPerPage: 5,
+           hasNextPage: false,
+           hasPreviousPage: false,
+         },
+       },
+     }));
+   });
 
-      expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({ type: fetchObservations.pending.type }));
-      expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({ type: fetchObservations.fulfilled.type, payload: mockData }));
-    });
 
     it('dispatches rejected action on failure', async () => {
       const error = new Error('Network error');
       (apiClient.get as jest.Mock).mockRejectedValue(error);
 
-      await fetchObservations()(dispatch, getState, undefined);
+      await fetchObservations({ page: 1, limit: 5, filter: 'all' })(dispatch, getState, undefined);
 
       expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({ type: fetchObservations.pending.type }));
       expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({ type: fetchObservations.rejected.type }));

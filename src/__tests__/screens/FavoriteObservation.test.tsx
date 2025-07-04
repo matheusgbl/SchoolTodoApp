@@ -5,14 +5,26 @@ import { useObservations } from '../../hooks/useObservation';
 import { ThemeProvider } from 'styled-components/native';
 import { testTheme } from '../../test-utils/theme';
 
-jest.mock('../../hooks/useObservation');
+jest.mock('../../hooks/useObservation', () => ({
+  useObservations: jest.fn(() => ({
+    observations: [],
+    status: 'loading',
+    pagination: { currentPage: 1 },
+    loadObservations: jest.fn(),
+    removeObservation: jest.fn(),
+    toggleObservationFavorite: jest.fn(),
+  })),
+}));
+
 jest.mock('react-redux', () => ({
   useDispatch: jest.fn(),
   useSelector: jest.fn(),
 }));
+
 jest.mock('react-native-toast-message', () => ({
   show: jest.fn(),
 }));
+
 jest.mock('../../components/ObservationCard', () => {
   const { Text, TouchableOpacity } = require('react-native');
 
@@ -70,7 +82,11 @@ describe('FavoritesScreen', () => {
   });
 
   it('shows loading indicator when loading and no data', () => {
-    setupMock({ status: 'loading' });
+    setupMock({
+     status: 'loading',
+     observations: [],
+     isInitialized: false,
+   });
     const { getByTestId } = render(
       <ThemeProvider theme={testTheme}>
         <FavoritesScreen />
@@ -115,7 +131,7 @@ describe('FavoritesScreen', () => {
       </ThemeProvider>
       );
     fireEvent.press(getByTestId('delete-button'));
-    expect(mockRemoveObservation).toHaveBeenCalledWith('1');
+    expect(mockRemoveObservation).toHaveBeenCalledWith('1', 'favorites');
   });
 
   it('calls toggleObservationFavorite when favorite pressed', () => {

@@ -62,26 +62,37 @@ export const fetchObservations = createAsyncThunk(
   'observations/fetchObservations',
   async (params: FetchObservationsParams = {}) => {
     const { page = 1, limit = 5, filter = 'all' } = params;
+    let url = `/observations`;
 
-    let url = `/observations?_page=${page}&_limit=${limit}&_sort=createdAt&_order=desc`;
-
-    // Aplicar filtros se necessário
+    // Apply filters
+    const queryParams = new URLSearchParams();
     if (filter === 'active') {
-      url += '&isCompleted=false';
+      queryParams.append('isCompleted', 'false');
     } else if (filter === 'completed') {
-      url += '&isCompleted=true';
+      queryParams.append('isCompleted', 'true');
     } else if (filter === 'favorites') {
-      url += '&isFavorite=true';
+      queryParams.append('isFavorite', 'true');
+    }
+
+    if (queryParams.toString()) {
+      url += `?${queryParams.toString()}`;
     }
 
     const response = await apiClient.get(url);
+    let items = response.data as Observation[];
 
-    // O json-server retorna o total de itens no header 'x-total-count'
-    const totalItems = parseInt(response.headers['x-total-count'] || '0', 10);
+    // Sort by date (most recent first) on client side
+    items.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+    // Manual pagination after sorting
+    const totalItems = items.length;
     const totalPages = Math.ceil(totalItems / limit);
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedItems = items.slice(startIndex, endIndex);
 
     return {
-      items: response.data as Observation[],
+      items: paginatedItems,
       pagination: {
         currentPage: page,
         totalPages,
@@ -93,6 +104,7 @@ export const fetchObservations = createAsyncThunk(
     };
   }
 );
+
 
 // Async Thunk para criar uma nova observação
 export const createObservation = createAsyncThunk(
