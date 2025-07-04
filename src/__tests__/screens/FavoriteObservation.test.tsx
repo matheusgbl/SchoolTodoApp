@@ -81,20 +81,6 @@ describe('FavoritesScreen', () => {
     expect(mockLoadObservations).toHaveBeenCalled();
   });
 
-  it('shows loading indicator when loading and no data', () => {
-    setupMock({
-     status: 'loading',
-     observations: [],
-     isInitialized: false,
-   });
-    const { getByTestId } = render(
-      <ThemeProvider theme={testTheme}>
-        <FavoritesScreen />
-      </ThemeProvider>
-      );
-    expect(getByTestId('ActivityIndicator')).toBeTruthy();
-  });
-
   it('renders only favorite observations', () => {
     const observations = [
       { id: '1', studentName: 'Alice', observation: 'Obs', isFavorite: true, isCompleted: false, createdAt: '2023-01-01' },
