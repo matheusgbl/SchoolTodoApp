@@ -1,97 +1,193 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# 📚 SchoolTodoApp
 
-# Getting Started
+> Uma aplicação React Native para gerenciamento de tarefas escolares, permitindo que estudantes organizem suas atividades acadêmicas de forma eficiente e prática.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## 🚀 Sobre o Projeto
 
-## Step 1: Start Metro
+O SchoolTodoApp é uma solução mobile desenvolvida em React Native que auxilia estudantes no gerenciamento de suas tarefas escolares. Com uma interface intuitiva e funcionalidades pensadas especificamente para o ambiente acadêmico, a aplicação permite organizar, acompanhar e completar atividades de forma produtiva.
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+## ✨ Funcionalidades
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+- ✅ **Gerenciamento de Tarefas**: Adicione, edite e remova tarefas escolares
+- 📅 **Organização por Data**: Visualize tarefas por data de vencimento
+- 📝 **Categorização**: Organize tarefas por matéria ou disciplina
+- 🎯 **Status de Conclusão**: Marque tarefas como concluídas
+- 📱 **Interface Responsiva**: Design otimizado para dispositivos móveis
+- 🔄 **Sincronização Local**: Dados persistidos localmente no dispositivo
 
-```sh
-# Using npm
+## 🛠️ Tecnologias Utilizadas
+
+- **React Native**: Framework principal para desenvolvimento mobile
+- **TypeScript**: Linguagem de programação com tipagem estática
+- **React Navigation**: Navegação entre telas
+- **React Native Vector Icons**: Ícones customizados
+- **Styled Components**: Estilização de componentes
+
+## 📋 Pré-requisitos
+
+Antes de executar a aplicação, certifique-se de ter as seguintes ferramentas instaladas:
+
+### Ambiente de Desenvolvimento
+- **Node.js** (versão 16 ou superior)
+- **npm** ou **yarn**
+- **React Native CLI**
+- **Android Studio** (para desenvolvimento Android)
+- **Xcode** (para desenvolvimento iOS - apenas macOS)
+
+### Configuração do Ambiente
+
+1. **Siga o guia oficial do React Native**: [Environment Setup](https://reactnative.dev/docs/environment-setup)
+2. **Para Android**: Configure o Android Studio e SDK
+3. **Para iOS**: Configure o Xcode e CocoaPods (apenas macOS)
+
+## 🚀 Como Executar
+
+### 1. Clone o Repositório
+```bash
+git clone https://github.com/matheusgbl/SchoolTodoApp.git
+cd SchoolTodoApp
+```
+
+### 2. Instale as Dependências
+```bash
+# Usando npm
+npm install
+
+# OU usando yarn
+yarn install
+```
+
+### 3. Configure as Dependências Nativas (iOS)
+```bash
+# Instale o CocoaPods (primeira vez)
+bundle install
+
+# Instale as dependências do iOS
+cd ios && bundle exec pod install && cd ..
+```
+
+### 4. Inicie o Metro Bundler
+```bash
+# Usando npm
 npm start
 
-# OR using Yarn
+# OU usando yarn
 yarn start
 ```
 
-## Step 2: Build and run your app
+### 5. Execute a Aplicação
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
-
-```sh
-# Using npm
+#### Android
+```bash
+# Usando npm
 npm run android
 
-# OR using Yarn
+# OU usando yarn
 yarn android
 ```
 
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
+#### iOS
+```bash
+# Usando npm
 npm run ios
 
-# OR using Yarn
+# OU usando yarn
 yarn ios
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+## 📱 Testando a Aplicação
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+### Emuladores
+- **Android**: Certifique-se de ter um emulador Android rodando
+- **iOS**: Use o simulador iOS (apenas macOS)
 
-## Step 3: Modify your app
+### Dispositivos Físicos
+- **Android**: Ative o modo desenvolvedor e depuração USB
+- **iOS**: Configure o dispositivo para desenvolvimento
 
-Now that you have successfully run the app, let's make changes!
+## 🎯 Estrutura do Projeto
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+```
+SchoolTodoApp/
+├── android/                 # Configurações Android
+├── ios/                     # Configurações iOS
+├── src/                     # Código fonte principal
+│   ├── components/          # Componentes reutilizáveis
+│   ├── screens/             # Telas da aplicação
+│   ├── services/            # Serviços e APIs
+│   ├── utils/               # Utilitários e helpers
+│   └── types/               # Definições de tipos TypeScript
+├── App.tsx                  # Componente principal
+├── package.json             # Dependências do projeto
+└── README.md               # Este arquivo
+```
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+## 🔧 Scripts Disponíveis
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+- `npm start`: Inicia o Metro bundler
+- `npm run android`: Executa no Android
+- `npm run ios`: Executa no iOS
+- `npm run lint`: Executa o linter
+- `npm run test`: Executa os testes
+- `npm run build`: Gera build de produção
 
-## Congratulations! :tada:
+## 🐛 Resolução de Problemas
 
-You've successfully run and modified your React Native App. :partying_face:
+### Problemas Comuns
 
-### Now what?
+#### Metro bundler não inicia
+```bash
+# Limpe o cache do Metro
+npx react-native start --reset-cache
+```
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+#### Erro de build no Android
+```bash
+# Limpe o projeto Android
+cd android && ./gradlew clean && cd ..
+```
 
-# Troubleshooting
+#### Erro de build no iOS
+```bash
+# Limpe o projeto iOS
+cd ios && xcodebuild clean && cd ..
+```
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+#### Dependências nativas não funcionam
+```bash
+# Reinstale as dependências
+rm -rf node_modules
+npm install
+# Para iOS
+cd ios && bundle exec pod install && cd ..
+```
 
-# Learn More
+## 🔄 Atualizações e Manutenção
 
-To learn more about React Native, take a look at the following resources:
+### Atualizando Dependências
+```bash
+# Verifique dependências desatualizadas
+npm outdated
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+# Atualize dependências
+npm update
+```
+
+### Limpeza de Cache
+```bash
+# Limpe todos os caches
+npx react-native start --reset-cache
+npm start -- --reset-cache
+```
+
+## 📖 Recursos Adicionais
+
+### Documentação
+- [React Native Documentation](https://reactnative.dev/docs/getting-started)
+- [TypeScript Documentation](https://www.typescriptlang.org/docs/)
+- [React Navigation](https://reactnavigation.org/docs/getting-started)
+
+### Ferramentas de Debug
+- **Flipper**: Ferramenta de debug avançada
+- **React Native Debugger**: Debug específico para React Native
+- **Chrome DevTools**: Debug via navegador
